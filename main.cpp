@@ -1,3 +1,14 @@
+/*----------------------------------------------------------------------------------*/
+//File name   :   CS112_A3_Part1_25_20231208_20231071_20231189.cpp
+//Description :   This program can load images and apply different filters to them
+//Names       :   Youssef Ahmed Mahmoud Mohamed Elebiary    -    20231208
+//                Zainab Mostafa Mohammad Mahmoud Ali       -    20231071
+//                Nagham Wael Mohamed                       -    20231189
+//Who did what:   Youssef   ->   Invert Filter and menu
+//                Nagham    ->   Black and White and flip
+//                Zainab    ->   Lighten/Darken and grayscale
+/*----------------------------------------------------------------------------------*/
+
 #include <iostream>
 #include "Image_Class.h"
 
@@ -10,11 +21,14 @@ void invert_image(Image&);
 void black_white(Image&);
 void flip_vertically(Image&);
 void flip_horizontally(Image&);
+void GrayScaling(Image&);
+void Lighten(Image&);
+void Darken(Image&);
 
 int main() {
-    //Initializing variables
+    //Initializing the variables
     string file_name;
-    int choice, save_type;
+    int choice, save_type, s, f;
     //Welcome menu
     cout << "Welcome to the BabyPhotoShop program\n" << "This program allows you to apply filters to images\n\n";
     //Getting the file name
@@ -32,14 +46,14 @@ int main() {
     while (true) {
         //Getting which filter to apply to the image
         cout << "\nMain menu\n";
-        cout << "1) Load Another Image\n2) Grayscale Conversion\n3) Black and White\n4) Invert Image\n5) Flip Vertically\n6) Flip Horizontally\n7) Save Image\n8) Exit\n";
+        cout << "1) Load Another Image\n2) Grayscale Conversion\n3) Black and White\n4) Invert Image\n5) Flip\n6) Lighten\n7) Darken\n8) Save Image\n9) Exit\n";
         cout << "Choice: ";
         cin >> choice;
         //Handling invalid input
-        while (cin.fail() || !(1 <= choice && choice <= 8)) {
+        while (cin.fail() || !(1 <= choice && choice <= 9)) {
             cout << "\nInvalid Input\n";
             cout << "\nMain menu\n";
-            cout << "1) Load Another Image\n2) Grayscale Conversion\n3) Black and White\n4) Invert Image\n5) Flip Vertically\n6) Flip Horizontally\n7) Save Image\n8) Exit\n";
+            cout << "1) Load Another Image\n2) Grayscale Conversion\n3) Black and White\n4) Invert Image\n5) Flip\n6) Lighten\n7) Darken\n8) Save Image\n9) Exit\n";
             cout << "Choice: ";
             cin >> choice;
         }
@@ -56,18 +70,34 @@ int main() {
                 getline(cin, file_name);
             }
             //Loading the other image
-            Image image(file_name);
+            image.loadNewImage(file_name);
         } else if (choice == 2) {           //Grayscale Conversion
-            cout << "Under Development\n";
+            GrayScaling(image);
         } else if (choice == 3) {           //Black and White
             black_white(image);
         } else if (choice == 4) {           //Invert Image
             invert_image(image);
-        } else if (choice == 5) {           //Flip Vertically
-            flip_vertically(image);
-        } else if (choice == 6) {           //Flip Horizontally
-            flip_horizontally(image);
-        } else if (choice == 7) {           //Save
+        } else if (choice == 5) {           //Flip
+            //Getting flip direction
+            cout << "\nSelect the flip direction\n1) Flip Vertically\n2) Flip Horizontally\nDirection: ";
+            cin >> f;
+            //Handling invalid input
+            while (cin.fail() || !(1 <= f && f <= 2)) {
+                cout << "\nInvalid Input\n";
+                cout << "\nSelect the flip direction\n1) Flip Vertically\n2) Flip Horizontally\nDirection: ";
+                cin >> f;
+            }
+            //Flipping according to choice
+            if (f == 1) {                   //Vertically
+                flip_vertically(image);
+            } else if (f == 2) {            //Horizontally
+                flip_horizontally(image);
+            }
+        } else if (choice == 6) {           //Lighten
+            Lighten(image);
+        } else if (choice == 7) {           //Darken
+            Darken(image);
+        } else if (choice == 8) {           //Save
             //Getting how to save the image
             cout << "\nSelect how to save the image\n";
             cout << "1) Replace the old image\n2) Save as a new image\n";
@@ -101,10 +131,59 @@ int main() {
                 image.saveImage(file_name);
                 cout << "Saved Successfully\n";
             }
-        } else if (choice == 8) {           //Exit
+        } else if (choice == 9) {           //Exit
             //Printing the exit message
-            cout << "Exiting...\n" << "Thank you for using our program\n";
-            break;
+            cout << "Do you want to save?\n1) Yes\n2) No\nAnswer: ";
+            cin >> s;
+            //Handling invalid input
+            while (cin.fail() || !(1 <= s && s <= 2)) {
+                cout << "\nInvalid Input\n";
+                cout << "Do you want to save?\n1) Yes\n2) No\nAnswer: ";
+                cin.ignore();
+                cin >> s;
+            }
+            if (s == 1) {
+                //Getting how to save the image
+                cout << "\nSelect how to save the image\n";
+                cout << "1) Replace the old image\n2) Save as a new image\n";
+                cout << "Type: ";
+                cin >> save_type;
+                //Handling invalid input
+                while (cin.fail() || !(1 <= save_type && save_type <= 2)) {
+                    cout << "\nInvalid Input\n";
+                    cout << "\nSelect how to save the image\n";
+                    cout << "1) Replace the old image\n2) Save as a new image\n";
+                    cout << "Type: ";
+                    cin >> save_type;
+                }
+                if (save_type == 1) {           //Replace old image
+                    //Saving the image
+                    image.saveImage(file_name);
+                    cout << "Saved Successfully\n\n";
+                    cout << "Exiting...\n" << "Thank you for using our program\n";
+                    break;
+                } else if (save_type == 2) {    //Save as a new image
+                    //Getting the name of the new image
+                    cout << "Enter the name and the extension of the image: ";
+                    cin.ignore();
+                    getline(cin, file_name);
+                    //Handling invalid input
+                    while (cin.fail() || !isValidExtension(file_name)) {
+                        cout << "\nInvalid Input\n";
+                        cout << "Enter the name and the extension of the image: ";
+                        cin.ignore();
+                        getline(cin, file_name);
+                    }
+                    //Saving the image with the new name
+                    image.saveImage(file_name);
+                    cout << "Saved Successfully\n\n";
+                    cout << "Exiting...\n" << "Thank you for using our program\n";
+                    break;
+                }
+            } else if (s == 2) {
+                cout << "Exiting...\n" << "Thank you for using our program\n";
+                break;
+            }
         }
     }
     return 0;
@@ -194,6 +273,71 @@ void flip_horizontally(Image& image) {
                 unsigned int pxl = image(i, j, k);
                 image(i, j, k) = image(image.width - 1 - i, j, k);
                 image(image.width - 1 - i, j, k) = pxl;
+            }
+        }
+    }
+    //Success message
+    cout << "Filter Applied Successfully\n";
+}
+
+void GrayScaling (Image& image){
+    for (int i = 0 ; i < image.width ; ++i){
+        for (int j = 0 ; j < image.height ; ++j){
+
+            unsigned int avg = 0;  // Initializing average value.
+            for (int k = 0 ; k < image.channels ; ++k){
+                avg +=image (i,j,k);
+            }
+            avg /= 3;  // Calculating the average.
+
+            for (int k = 0 ; k < image.channels ; ++k){
+                image (i,j,k) = avg ;  // setting the three intensities (RGB channels) to average value.
+            }
+        }
+    }
+    //Success message
+    cout << "Filter Applied Successfully\n";
+}
+
+void Lighten(Image& image){
+    int LightedPixel;
+    for (int i = 0 ; i < image.width ; ++i){
+        for (int j = 0 ; j < image.height ; ++j){
+            for (int k = 0 ; k < image.channels ; ++k){
+
+                unsigned char PixelValue;  //ensuring that range of pixel value from 0 to 255.
+                PixelValue = image.getPixel(i , j , k);  //looping over each pixel in the image.
+                LightedPixel = PixelValue * 1.5;  //calculating lighted pixel.
+                if (LightedPixel < 0){
+                    LightedPixel = 0;
+                }
+                else if (LightedPixel > 255){
+                    LightedPixel = 255;
+                }
+                image.setPixel(i , j , k , LightedPixel);  //replace native pixels with lighted one.
+            }
+        }
+    }
+    //Success message
+    cout << "Filter Applied Successfully\n";
+}
+
+void Darken(Image& image){
+    int DarkenedPixel;
+    for (int i = 0 ; i < image.width ; ++i){
+        for (int j = 0 ; j < image.height ; ++j ){
+            for (int k = 0 ; k < 3 ; ++k){
+
+                unsigned char PixelValue;   //ensuring that range of pixel value from 0 to 255.
+                PixelValue = image.getPixel (i,j,k);  //looping over each pixel in the image.
+                DarkenedPixel = PixelValue * 0.5; //calculating darkened pixel.
+                if (DarkenedPixel < 0){
+                    DarkenedPixel = 0;
+                }
+                else if (DarkenedPixel > 255){
+                    DarkenedPixel = 255;
+                }
+                image.setPixel(i,j,k,DarkenedPixel); //replace native pixels with darkened one.
             }
         }
     }

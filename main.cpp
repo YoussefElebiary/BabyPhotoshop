@@ -5,6 +5,9 @@ using namespace std;
 
 bool isValidFile(string);
 void invert_image(string);
+void black_white(Image& image);
+void flip_vertically(Image& image);
+void flip_horizontally(Image& image);
 
 int main() {
     string file_name;
@@ -23,14 +26,14 @@ int main() {
         }
         //Getting which filter to apply to the image
         cout << "\nSelect which filter to apply\n";
-        cout << "1) Grayscale Conversion\n2) Black and White\n3) Invert Image\n4) Exit";
+        cout << "1) Grayscale Conversion\n2) Black and White\n3) Invert Image\n4) Flip vertically\n5) Flip horizontally\n6) Exit";
         cout << "Choice: ";
         cin >> choice;
         //Handling invalid input
         while (cin.fail() || !(1 <= choice && choice <= 4)) {
             cout << "\nInvalid Input\n";
             cout << "\nSelect which filter to apply\n";
-            cout << "1) Grayscale Conversion\n2) Black and White\n3) Invert Image\n4) Exit";
+            cout << "1) Grayscale Conversion\n2) Black and White\n3) Invert Image\n4) Flip vertically\n5) Flip horizontally\n6) Exit";
             cout << "Choice: ";
             cin >> choice;
         }
@@ -38,10 +41,14 @@ int main() {
         if (choice == 1) {
             cout << "Under Development\n";
         } else if (choice == 2) {
-            cout << "Under Development\n";
+            black_white(file_name);
         } else if (choice == 3) {
-            invert_image(file_name);
+            invert_image(file_name);  
         } else if (choice == 4) {
+            flip_vertically(file_name);
+        } else if (choice == 5) {
+            flip_horizontally(file_name);
+        }else if (choice == 6) {
             cout << "Exiting...\n" << "Thank you for using our program\n";
             break;
         }
@@ -105,6 +112,55 @@ void invert_image(string file_name) {
                 cout << e.what() << '\n';
                 cout << "Enter the new image's name and format: ";
                 getline(cin, new_name);
+            }
+        }
+    }
+}
+
+void black_white(Image& image) {
+    for (int i = 0; i < image.width; ++i) {
+        for (int j = 0; j < image.height; ++j) {
+            unsigned int avg = 0; // Initialize average value
+            for (int k = 0; k < 3; ++k) {
+                avg += image(i, j, k);
+            }
+            avg /= 3; // Calculate average
+
+            unsigned int new_pexel;
+            if(avg > (255/2)){
+                new_pexel = 255;
+            }
+            else {
+                new_pexel = 0;
+            }
+            image(i, j, 0) = new_pexel;
+            image(i, j, 1) = new_pexel;
+            image(i, j, 2) = new_pexel;
+        }
+    }
+}
+
+void flip_vertically(Image& image) {
+    for (int i = 0; i < image.width; ++i) {
+        for (int j = 0; j < image.height / 2; ++j) { //divide height by two
+            // Swap pixels between top and bottom rows
+            for (int k = 0; k < 3; ++k) {
+                unsigned int pxl = image(i, j, k);
+                image(i, j, k) = image(i, image.height - 1 - j, k);
+                image(i, image.height - 1 - j, k) = pxl;
+            }
+        }
+    }
+}
+
+void flip_horizontally(Image& image) {
+    for (int i = 0; i < image.width / 2; ++i) { //divide width by two
+        for (int j = 0; j < image.height; ++j) {
+            // Swap pixels between left and right columns
+            for (int k = 0; k < 3; ++k) {
+                unsigned int pxl = image(i, j, k);
+                image(i, j, k) = image(image.width - 1 - i, j, k);
+                image(image.width - 1 - i, j, k) = pxl;
             }
         }
     }

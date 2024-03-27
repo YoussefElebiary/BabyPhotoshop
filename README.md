@@ -15,7 +15,7 @@ ___
 **Commit 1 →** Created the repository <br>
 **Commit 2 →** Updated the README.md file <br>
 **Commit 3 →** Created the menu and the invert image filter <br>
-**Commit 4 →** Added more filters, updated the menu, the README file and the authors<br><br>
+**Commit 4 →** Added more filters, updated the menu and the authors<br><br>
 
 ## Version
 ___
